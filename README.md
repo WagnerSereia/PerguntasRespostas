@@ -36,6 +36,10 @@ Camada (Data)
 - Microsoft EntityFrameworkCore
 
 
-Ao Baixar o projeto executar o script "InitialScript" contido na pasta ...\PerguntasRespostas\src\PerguntasRespostas.Infra.Data\ScriptInicial
+INSTRUÇÕES INICIAIS
 
-Para logar no sistema utilizar o usuario 'wagner' e senha 'abc123@'
+- Ao Baixar o projeto executar o script "InitialScript" contido na pasta ...\PerguntasRespostas\src\PerguntasRespostas.Infra.Data\ScriptInicial
+
+- Clicar com o botão direito em cima da Solution e Properties, escolher a opção Multiple startup projects deixando o PerguntasResposta.Rest.API e o PerguntasResposta nessa exata ordem com a opção START selecionada.
+
+-Para logar no sistema utilizar o usuario 'wagner' e senha 'abc123@'
