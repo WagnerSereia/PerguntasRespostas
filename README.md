@@ -34,3 +34,8 @@ Camada (Data)
 - Dapper
  
 - Microsoft EntityFrameworkCore
+
+
+Ao Baixar o projeto executar o script "InitialScript" contido na pasta ...\PerguntasRespostas\src\PerguntasRespostas.Infra.Data\ScriptInicial
+
+Para logar no sistema utilizar o usuario 'wagner' e senha 'abc123@'
