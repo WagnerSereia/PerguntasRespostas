@@ -1,0 +1,61 @@
+﻿@model PerguntasRespostas.ViewModel.PerguntaViewModel
+@{
+    ViewData["Title"] = "Details";
+}
+
+
+
+<div>
+    <section class="content-header">
+        <h1>
+            Detalhar Perguntas
+        </h1>
+
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Formulario</h3>
+                    </div><!-- /.box-header -->
+                    <!-- form start -->
+
+
+                    
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label asp-for="Autor" class="control-label"></label>
+                                @Html.DisplayFor(model => model.Autor)
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Titulo" class="control-label"></label>
+                                @Html.DisplayFor(model => model.Titulo)
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Descricao" class="control-label"></label>
+                                @Html.DisplayFor(model => model.Descricao)
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Categoria" class="control-label"></label>
+                                @Html.DisplayFor(model => model.Categoria.Descricao)
+                            </div>
+                        </div><!-- /.box-body -->
+              
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div>
+    <a asp-action="Index">Voltar para a Lista</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

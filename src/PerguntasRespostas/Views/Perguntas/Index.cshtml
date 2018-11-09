@@ -1,0 +1,86 @@
+﻿@model IEnumerable<PerguntasRespostas.ViewModel.PerguntaViewModel>
+
+    @{
+    ViewData["Title"] = "Index";
+
+     string opcao = "Opções";
+    }
+
+    <div>
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Listar Todas Perguntas
+            </h1>
+
+        </section>
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-12">
+                    <!-- general form elements -->
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <a href="~/Perguntas/Create" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-plus"></i> Incluir</a>
+                        </div><!-- /.box-header -->
+                        <!-- form start -->
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-condensed">
+                                <thead>
+                                    <tr>                                        
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.Autor)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.Titulo)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.Descricao)
+                                        </th>
+                                        <th>
+                                            @opcao
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Autor)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Titulo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Descricao)
+                                        </td>
+                                       
+                                        <td>
+                                            <a href="@Url.Action("Edit", "Perguntas", new { id = item.Id })" class="btn btn-primary  btn-sm" title="Editar"><i class="glyphicon  glyphicon-list-alt"></i></a>
+                                            <a href="@Url.Action("Details", "Perguntas", new { id = item.Id })" class="btn btn-warning  btn-sm" title="Visualizar"><i class="glyphicon glyphicon-search"></i> </a>
+                                            <a href="@Url.Action("Delete","Perguntas", new { id = item.Id })" class="btn btn-danger  btn-sm" title="Excluir Pergunta"><i class="glyphicon glyphicon-remove"></i> </a>
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+
+
+
+
+
+
+
+
+

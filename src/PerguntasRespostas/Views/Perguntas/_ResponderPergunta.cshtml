@@ -1,0 +1,24 @@
+﻿@model PerguntasRespostas.ViewModel.RespostasViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<form asp-action="Create">
+    <div class="box-body">
+        <div class="form-group">            
+            <input type="hidden" asp-for="PerguntaId" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Descricao" class="control-label"></label>
+            <input asp-for="Descricao" class="form-control" />
+            <span asp-validation-for="Descricao" class="text-danger"></span>
+        </div>
+        
+    </div><!-- /.box-body -->
+    <div class="box-footer">
+        <button type="submit" class="btn btn-primary">Responder</button>
+    </div>
+</form>

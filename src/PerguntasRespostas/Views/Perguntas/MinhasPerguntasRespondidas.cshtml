@@ -1,0 +1,89 @@
+﻿@model IEnumerable<PerguntasRespostas.ViewModel.PerguntaViewModel>
+
+@{
+    ViewBag.Title = "Index";
+    int numeroCollapse = 1;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div>
+        <section class="content-header">
+            <h1>
+                Minhas Respostas
+            </h1>
+        </section>
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-12">
+                    <!-- general form elements -->
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Perguntas</h3>
+                        </div><!-- /.box-header -->
+                        <!-- form start -->
+
+                        @if (Model != null && Model.Any())
+                        {
+                            <div class="panel-group" id="accordion">
+                                @foreach (var item in Model)
+                                {
+                                    string collapse = "#collapse" + numeroCollapse;
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="@collapse">
+                                                    @Html.DisplayFor(modelItem => item.Titulo)
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse1" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        @foreach (var resposta in item.Respostas)
+                                                        {
+                                                            <div class="col-md-12">
+                                                                Por: @Html.DisplayFor(modelItem => resposta.Autor)
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                &nbsp;&nbsp;&nbsp;@Html.DisplayFor(modelItem => resposta.Descricao)
+
+                                                            </div>
+                                                        }
+                                                        
+                                                            <form action="~/Respostas/ResponderPergunta" method="post">
+                                                                <div>
+                                                                    @Html.Hidden("PerguntaId", item.Id)
+                                                                </div>
+                                                                @Html.TextArea("Descricao", new { style = "width:800px" })
+
+                                                                <div class="box-footer">
+                                                                    <button type="submit" class="btn btn-primary">Responder</button>
+                                                                </div>
+                                                            </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    numeroCollapse++;
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</body>
+</html>
