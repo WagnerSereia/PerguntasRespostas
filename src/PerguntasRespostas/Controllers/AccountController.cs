@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace PerguntasRespostas.Controllers
@@ -14,13 +16,23 @@ namespace PerguntasRespostas.Controllers
     public class AccountController : Controller
     {
         HttpClient client;
-        Uri perguntaUri;
+        private static string _urlBase;
         public AccountController()
         {
+            #region Recupera as configurações base de url do appSetting
+            var builder = new ConfigurationBuilder()
+                 .SetBasePath(Directory.GetCurrentDirectory())
+                 .AddJsonFile($"appsettings.json");
+            var config = builder.Build();
+
+            _urlBase = config.GetSection("API_Access:UrlBase").Value;
+            #endregion
+
             if (client == null)
             {
                 client = new HttpClient();
-                client.BaseAddress = new Uri("https://localhost:44362");
+                client.BaseAddress = new Uri(_urlBase);
+                client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             }
         }
@@ -41,21 +53,22 @@ namespace PerguntasRespostas.Controllers
             var json = JsonConvert.SerializeObject(model);
             var Content = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
             
-            HttpResponseMessage response = client.PostAsync("api/v1.0/Account", Content).Result;
+            HttpResponseMessage response = client.PostAsync("Account", Content).Result;
 
             //se retornar com sucesso busca os dados
             if (response.IsSuccessStatusCode)
-            {                
+            {
+                Retorno retorno = await response.Content.ReadAsAsync<Retorno>();
+
                 var claims = new List<Claim>();
                 claims.Add(new Claim(ClaimTypes.Name, model.Login));
                 claims.Add(new Claim(ClaimTypes.Role, "admin"));
-                var id = new ClaimsIdentity(claims, "password");
-                var principal = new ClaimsPrincipal(id);
+                claims.Add(new Claim("AcessToken", string.Format("Bearer {0}", retorno.accessToken)));
+                
+                var identity = new ClaimsIdentity(claims, "ApplicationCookie");
 
-                //Retorno teste = response.Content.ReadAsAsync<Retorno>();
+                var principal = new ClaimsPrincipal(identity);
 
-                //var storage = new LocalStorage();
-                //session["Fiap.app-token"] = teste.accessToken;
 
                 await HttpContext.SignInAsync("app", principal, new AuthenticationProperties() { IsPersistent = model.IsPersistent });
 

@@ -30,7 +30,7 @@ namespace PerguntasRespostas.Domain.Services
             return user.Login == "wagner" && user.Senha == "abc123@";
         }
 
-        public async Task<bool> IsValidUserAndPasswordCombination(string login, string password)
+        public bool IsValidUserAndPasswordCombination(string login, string password)
         {
             if (login == "wagner" && password == "abc123@")
             {

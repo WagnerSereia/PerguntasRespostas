@@ -21,6 +21,7 @@ using Microsoft.IdentityModel.Tokens;
 using PerguntasRespostas.Infra.CrossCutting.IoC;
 using PerguntasRespostas.Infra.Data.Context;
 using PerguntasRespostas.Services.REST.API.Configurations;
+using PerguntasRespostas.Services.REST.API.Configurations.JWT;
 using PerguntasRespostas.UI.Configurations;
 
 namespace PerguntasRespostas.Services.REST.API
@@ -74,23 +75,37 @@ namespace PerguntasRespostas.Services.REST.API
 
             services.AddDIConfiguration();
 
-            services.AddAuthentication(options =>
+            #region Configuration JWT
+            var signingConfigurations = new SigningConfigurations();
+            services.AddSingleton(signingConfigurations);
+
+            var tokenConfigurations = new TokenConfigurations();
+            new ConfigureFromConfigurationOptions<TokenConfigurations>(
+                Configuration.GetSection("TokenConfigurations"))
+                    .Configure(tokenConfigurations);
+            services.AddSingleton(tokenConfigurations);
+
+            services.AddAuthentication(authOptions =>
             {
-                options.DefaultAuthenticateScheme = "Jwt";
-                options.DefaultChallengeScheme = "Jwt";
-            }).AddJwtBearer("Jwt", options =>
+                authOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                authOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(bearerOptions =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = false,
-                    //ValidAudience = "the audience you want to validate",
-                    ValidateIssuer = false,
-                    //ValidIssuer = "the isser you want to validate",
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("the secret that needs to be at least 16 characeters long")),
-                    ValidateLifetime = true, //validate the expiration and not before values in the token
-                    ClockSkew = TimeSpan.FromMinutes(5) //5 minute tolerance for the expiration date 
-                };
+                var paramsValidation = bearerOptions.TokenValidationParameters;
+                paramsValidation.IssuerSigningKey = signingConfigurations.Key;
+                paramsValidation.ValidAudience = tokenConfigurations.Audience;
+                paramsValidation.ValidIssuer = tokenConfigurations.Issuer;
+
+                // Valida a assinatura de um token recebido
+                paramsValidation.ValidateIssuerSigningKey = true;
+
+                // Verifica se um token recebido ainda é válido
+                paramsValidation.ValidateLifetime = true;
+
+                // Tempo de tolerância para a expiração de um token (utilizado
+                // caso haja problemas de sincronismo de horário entre diferentes
+                // computadores envolvidos no processo de comunicação)
+                paramsValidation.ClockSkew = TimeSpan.Zero;
             });
 
             // Ativa o uso do token como forma de autorizar o acesso
@@ -101,6 +116,7 @@ namespace PerguntasRespostas.Services.REST.API
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser().Build());
             });
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

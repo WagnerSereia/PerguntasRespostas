@@ -11,7 +11,7 @@ namespace PerguntasRespostas.Domain.Interfaces.Services
     {
         Guid GetUserId();
         bool IsAuthenticated();        
-        Task<bool> IsValidUserAndPasswordCombination(string login, string senha);
+        bool IsValidUserAndPasswordCombination(string login, string senha);
         User GetUser();
     }
 }

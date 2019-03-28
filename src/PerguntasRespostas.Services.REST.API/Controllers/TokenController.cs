@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -26,11 +27,11 @@ namespace PerguntasRespostas.Services.REST.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody]LoginViewModel model)
         {            
-            if (await _userService.IsValidUserAndPasswordCombination(model.Login, model.Senha))
+            if (_userService.IsValidUserAndPasswordCombination(model.Login, model.Senha))
             {                
                 var user = _userService.GetUser();
                 var token = GenerateToken(user);
-                //Salvar no DB
+                
                 return new ObjectResult(token);
             }
             return View();

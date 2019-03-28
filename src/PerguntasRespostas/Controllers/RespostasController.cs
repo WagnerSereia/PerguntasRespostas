@@ -1,9 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using PerguntasRespostas.Models;
 using PerguntasRespostas.ViewModel;
 
 namespace PerguntasRespostas.Controllers
@@ -12,19 +19,29 @@ namespace PerguntasRespostas.Controllers
     public class RespostasController : Controller
     {
         HttpClient client;
-        Uri respostaUri;
+        private static string _urlBase;
         public RespostasController()
         {
+            #region Recupera as configurações base de url do appSetting
+            var builder = new ConfigurationBuilder()
+                 .SetBasePath(Directory.GetCurrentDirectory())
+                 .AddJsonFile($"appsettings.json");
+            var config = builder.Build();
+
+            _urlBase = config.GetSection("API_Access:UrlBase").Value;
+            #endregion
+
             if (client == null)
-            {
+            {                
                 client = new HttpClient();
-                client.BaseAddress = new Uri("https://localhost:44362");
+                client.BaseAddress = new Uri(_urlBase);
+                client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             }
         }
         public IActionResult Index()
         {
-            HttpResponseMessage response = client.GetAsync("api/v1.0/respostas/todas-respostas").Result;
+            HttpResponseMessage response = client.GetAsync("respostas/todas-respostas").Result;
 
             //se retornar com sucesso busca os dados
             if (response.IsSuccessStatusCode)
@@ -39,11 +56,7 @@ namespace PerguntasRespostas.Controllers
 
         public IActionResult Minhasrespostas()
         {
-            //****************************************************************
-            //PRECISO PASSAR O BEARER PREENCHDIO AQUI PARA CONSEGUIR RECUPERAR
-            //****************************************************************
-
-            HttpResponseMessage response = client.GetAsync("api/v1.0/respostas/minhas-respostas").Result;
+            HttpResponseMessage response = client.GetAsync("respostas/minhas-respostas").Result;
 
             //se retornar com sucesso busca os dados
             if (response.IsSuccessStatusCode)
@@ -65,7 +78,7 @@ namespace PerguntasRespostas.Controllers
                 var teste = respostaViewModel.Descricao;
                 teste = respostaViewModel.PerguntaId.ToString();
 
-                var response = await client.PostAsJsonAsync("api/v1.0/respostas/criar-resposta", respostaViewModel);
+                var response = await client.PostAsJsonAsync("respostas/criar-resposta", respostaViewModel);
                 if (!response.IsSuccessStatusCode)
                 {
                     return BadRequest();
@@ -76,7 +89,7 @@ namespace PerguntasRespostas.Controllers
 
         public IActionResult Create()
         {
-            HttpResponseMessage response = client.GetAsync("api/v1.0/categorias").Result;
+            HttpResponseMessage response = client.GetAsync("categorias").Result;
            
             return View();
         }
@@ -88,7 +101,7 @@ namespace PerguntasRespostas.Controllers
             if (ModelState.IsValid)
             {
                 RespostasViewModel.Autor = User.Identity.Name;
-                var response = await client.PostAsJsonAsync("api/v1.0/respostas/criar-resposta", RespostasViewModel);
+                var response = await client.PostAsJsonAsync("respostas/criar-resposta", RespostasViewModel);
                 if (response.IsSuccessStatusCode)
                 {
                     return RedirectToAction(nameof(Index));
@@ -106,7 +119,7 @@ namespace PerguntasRespostas.Controllers
                 return BadRequest(ModelState);
             }
 
-            var resposta = await client.GetAsync($"api/v1.0/respostas/obter-resposta/{id}");
+            var resposta = await client.GetAsync($"respostas/obter-resposta/{id}");
             if (resposta == null)
             {
                 return NotFound();
@@ -117,7 +130,7 @@ namespace PerguntasRespostas.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            await client.GetAsync($"api/v1.0/respostas/remover-resposta/{id}");
+            await client.GetAsync($"respostas/remover-resposta/{id}");
 
             return Ok(resposta);
         }

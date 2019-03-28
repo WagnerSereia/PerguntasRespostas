@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using PerguntasRespostas.ViewModel;
 
 namespace PerguntasRespostas.Controllers
@@ -11,20 +13,30 @@ namespace PerguntasRespostas.Controllers
     public class CategoriaController : Controller
     {
         HttpClient client;
-        Uri perguntaUri;
+        private static string _urlBase;
         public CategoriaController()
         {
+            #region Recupera as configurações base de url do appSetting
+            var builder = new ConfigurationBuilder()
+                 .SetBasePath(Directory.GetCurrentDirectory())
+                 .AddJsonFile($"appsettings.json");
+            var config = builder.Build();
+
+            _urlBase = config.GetSection("API_Access:UrlBase").Value;
+            #endregion
+
             if (client == null)
             {
                 client = new HttpClient();
-                client.BaseAddress = new Uri("https://localhost:44362");
+                client.BaseAddress = new Uri(_urlBase);
+                client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             }
         }
 
         public IActionResult Index()
         {
-            HttpResponseMessage response = client.GetAsync("api/v1.0/categorias").Result;
+            HttpResponseMessage response = client.GetAsync("categorias").Result;
 
             var categorias = response.Content.ReadAsAsync<IEnumerable<CategoriaViewModel>>().Result;
             return View(categorias);
@@ -67,9 +79,7 @@ namespace PerguntasRespostas.Controllers
 
         public IActionResult Details(int? id)
         {
-
-            @ViewBag.Autor = "Wagner Serea";
-
+            @ViewBag.Autor = User.Identity.Name;
 
             return View();
         }
