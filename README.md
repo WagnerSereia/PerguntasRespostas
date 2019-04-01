@@ -20,7 +20,8 @@ Camada (Services)
 - AutoMapper
  
 - Swagger
- 
+
+- Autenticação via TOKEN (JWT)
 
 
 Camada (Domain)
