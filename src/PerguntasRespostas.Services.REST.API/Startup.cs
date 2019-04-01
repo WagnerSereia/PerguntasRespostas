@@ -76,6 +76,11 @@ namespace PerguntasRespostas.Services.REST.API
             services.AddDIConfiguration();
 
             #region Configuration JWT
+            //Estratégias para implementação do JTW:
+            //Criar uma class que implemente o HttpCliente, injetando-a como Transient e preenchendo o Token no bearer na implementação
+            //ou recuperar a autenticação para o JWT, colocando os usuarios em cache, assim não será necessário bater em banco
+            //Nessa última opção, indicado implementar o RefreshToken e deixar a expiração do token com um tempo baixo.
+
             var signingConfigurations = new SigningConfigurations();
             services.AddSingleton(signingConfigurations);
 
